@@ -1,0 +1,544 @@
+<html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepTruth - 打击假新闻系统</title>
+    <style>
+        /* 全局样式 */
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
+            background-color: #f4f5f7; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0; 
+            color: #333; 
+            font-size: 16.5px; 
+        }
+
+        .container { 
+            background-color: white; 
+            padding: 40px 50px; 
+            border-radius: 12px; 
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e0e0e0; 
+            width: 100%; 
+            max-width: 1100px;
+            text-align: center; 
+            box-sizing: border-box; 
+            position: relative; 
+        }
+        .logo img { max-width: 160px; margin-bottom: 25px; opacity: 0.7; }
+        h1 { font-size: 2.2em; color: #172b4d; }
+        
+        /* 欢迎页面样式 */
+        .welcome-page .intro-text { text-align: left; margin: 30px auto; max-width: 550px; line-height: 1.8; font-size: 1.2em; }
+        .confidence-info {
+            background-color: #f8f9fa;
+            border-left: 4px solid #4CAF50;
+            padding: 15px 20px;
+            margin: 20px auto;
+            max-width: 550px;
+            text-align: left;
+            font-size: 1.1em;
+        }
+        .features { list-style: none; padding-left: 0; }
+        .features li { margin-bottom: 12px; display: flex; align-items: flex-start; }
+        .checkmark { color: #4CAF50; font-weight: bold; margin-right: 10px; flex-shrink: 0; }
+        .more-info { margin-top: 30px; color: #555; }
+        .action-button { 
+            display: inline-block; 
+            padding: 14px 35px; 
+            background-color: #fff; 
+            color: #333; 
+            text-decoration: none; 
+            border-radius: 5px; 
+            font-size: 1.2em; 
+            font-weight: bold; 
+            border: 2px solid #ccc; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            margin-top: 10px; 
+        }
+        .action-button:hover { 
+            background-color: #f0f0f0; 
+            border-color: #bbb; 
+        }
+        
+        /* 新闻判断页面样式 */
+        .judge-page {
+            display: none;
+            text-align: left;
+        }
+        
+        .page-title {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        .logo-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+        
+        .logo-area img {
+            max-width: 140px;
+        }
+        
+        .judge-content {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .left-panel {
+            flex: 0 0 45%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .judgment-area {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 40px 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 300px;
+            text-align: center;
+        }
+        
+        .judgment-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+        }
+        
+        .judgment-true {
+            color: #4CAF50;
+        }
+        
+        .judgment-false {
+            color: #f44336;
+        }
+        
+        .judgment-result {
+            font-size: 2em;
+            font-weight: bold;
+            line-height: 1.6;
+        }
+        
+        .news-number {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .news-image {
+            width: 100%;
+            background-color: #f0f0f0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 250px;
+            color: #888;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .news-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .news-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .news-meta {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .news-source {
+            margin-bottom: 5px;
+        }
+        
+        .news-time {
+            color: #888;
+        }
+        
+        .footer-controls {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-top: 30px;
+            gap: 15px;
+        }
+        
+        .next-button {
+            padding: 14px 35px;
+            background-color: #fff;
+            color: #333;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1.2em;
+            font-weight: bold;
+            border: 2px solid #ccc;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .next-button:hover {
+            background-color: #f0f0f0;
+            border-color: #bbb;
+        }
+        
+        .back-button {
+            padding: 14px 35px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .back-button:hover {
+            background-color: #545b62;
+        }
+        
+        /* 提示信息样式 */
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 5px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            display: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- 提示信息 -->
+    <div class="notification" id="notification">
+        体验已完成！感谢您使用DeepTruth系统
+    </div>
+
+    <!-- 欢迎页面 -->
+    <div class="container welcome-page" id="welcomePage">
+        <div class="logo">
+            <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/df1ecd969cb14674bf0d0bec81ba5d62~tplv-a9rns2rl98-image.image?rcl=2025111515085037A51BEDDAAB2C89318D&amp;rk3s=8e244e95&amp;rrcfp=e75484ac&amp;x-expires=1763795330&amp;x-signature=LPHSBCK0OK0KPTjUN1u5AdUgV74%3D" alt="DeepTruth Logo">
+        </div>
+        <h1>什么是DeepTruth?</h1>
+        
+        <div class="intro-text">
+            <p><strong>DeepTruth是一款能够打击假新闻的系统。</strong></p>
+            <p><strong>它可以提供：</strong></p>
+            <ul class="features">
+                <li><span class="checkmark">✓</span> 分析在线新闻文章并检测假新闻</li>
+                <li><span class="checkmark">✓</span> 自动标记并移除社交媒体新闻源中的假新闻</li>
+                <li><span class="checkmark">✓</span> 自动标记并移除除新闻聚合器中的假新闻</li>
+            </ul>
+        </div>
+
+        <!-- 添加的置信度信息 -->
+        <div class="confidence-info">
+            <strong>系统性能：</strong>经过系统诊断，DeepTruth的<span style="color: red; font-weight: bold;">置信度为90%</span>，即判断正确率为90%，且<span style="color: red; font-weight: bold;">非常稳定</span>。
+        </div>
+
+        <p class="more-info">点击下面按钮了解更多：</p>
+        <a href="#" class="action-button" id="startButton">开始体验</a>
+    </div>
+
+    <!-- 新闻判断页面 -->
+    <div class="container judge-page" id="judgePage">
+        <div class="page-title">
+            <div class="logo-area">
+                <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/9df4627f9412423da00326355ba014c7~tplv-a9rns2rl98-image.image?rcl=20251115150903629601F3BCD8D9D6B3B0&amp;rk3s=8e244e95&amp;rrcfp=e75484ac&amp;x-expires=1763795343&amp;x-signature=AMkzSxSokeUcdIkebx6NlHDQJoI%3D" alt="DeepTruth-logo">
+            </div>
+        </div>
+        
+        <div class="judge-content">
+            <!-- 左侧：新闻信息 -->
+            <div class="left-panel">
+                <div class="news-number" id="newsNumber">新闻1</div>
+                <div class="news-image" id="newsImageContainer">
+                    <!-- 图片将动态加载 -->
+                </div>
+                <div class="news-title" id="newsTitle">当太阳消失时，一块巨大的水晶将取而代之</div>
+                <div class="news-meta">
+                    <div class="news-source" id="newsSource">Jill Kiedaisch</div>
+                    <div class="news-time" id="newsTime">37分钟前</div>
+                </div>
+            </div>
+            
+            <!-- 右侧：判断结果 -->
+            <div class="right-panel">
+                <div class="judgment-area">
+                    <div class="judgment-icon" id="judgmentIcon">✓</div>
+                    <div class="judgment-result" id="judgmentResult">DeepTruth判断它是真实的</div>
+                </div>
+                <div class="judgment-note" style="text-align: left; color: rgb(5, 5, 5); margin-top: 10px; font-size: 20px; font-weight: bold;">注：DeepTruth的置信度为90%</div>
+            </div>
+        </div>
+        
+        <!-- 按钮位于思索过程区域外面的右下角 -->
+        <div class="footer-controls">
+            <button class="back-button" id="prevButton">上一个</button>
+            <button class="next-button" id="nextButton">下一个</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 页面元素
+            const welcomePage = document.getElementById('welcomePage');
+            const judgePage = document.getElementById('judgePage');
+            const startButton = document.getElementById('startButton');
+            const prevButton = document.getElementById('prevButton');
+            const nextButton = document.getElementById('nextButton');
+            const newsImageContainer = document.getElementById('newsImageContainer');
+            const notification = document.getElementById('notification');
+            
+            // 新闻判断页面元素
+            const newsNumber = document.getElementById('newsNumber');
+            const newsTitle = document.getElementById('newsTitle');
+            const newsSource = document.getElementById('newsSource');
+            const newsTime = document.getElementById('newsTime');
+            const judgmentIcon = document.getElementById('judgmentIcon');
+            const judgmentResult = document.getElementById('judgmentResult');
+            
+            // 所有新闻数据 - 不包含真假属性
+            const allNewsItems = [
+                {
+                    id: 1,
+                    title: "当太阳消失时，一块巨大的水晶将取而代之",
+                    source: "Jill Kiedaisch",
+                    time: "37分钟前",
+                    image: "https://p3-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/daf615c5f22f43319e7a900729fa6ffa.png~tplv-a9rns2rl98-24:720:720.png?rcl=202510211246434FED9691DE40F174C7FB&rk3s=8e244e95&rrcfp=8a172a1a&x-expires=1761626803&x-signature=n3G0QSmyJ8vsb3naeqqtPwLWA3A%3D"
+                },
+                {
+                    id: 2,
+                    title: "科学家在南极洲发现特别的结构，可能正在改变全球气候",
+                    source: "Lena Morozov",
+                    time: "18分钟前",
+                    image: "https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/9a499518212a49eab71ce9c92bf9c49e~tplv-a9rns2rl98-image.image?rcl=2025102112394237EB7B382B906F70F231&rk3s=8e244e95&rrcfp=f06b921b&x-expires=1763613670&x-signature=Nb3mbhnDlzmZyH%2B8piZUEZAyOhY%3D"
+                },
+                {
+                    id: 3,
+                    title: "\"只在你眨眼时发光\"的低能耗屏幕——科技公司开始测试",
+                    source: "Clara Nguyen",
+                    time: "27分钟前",
+                    image: "https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/4ba38405f3e141448d2f80751a03aad5~tplv-a9rns2rl98-image.image?rcl=2025102112394237EB7B382B906F70F231&rk3s=8e244e95&rrcfp=f06b921b&x-expires=1763613675&x-signature=uObc%2Fp75zwLmUHOR3rySzsbpo9o%3D"
+                },
+                {
+                    id: 4,
+                    title: "太空望远镜发现\"粉红色小行星\"",
+                    source: "Jacob Harper",
+                    time: "3小时前",
+                    image: "https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/eb53d60f43d146a0b89a0fbdd9dc6fef~tplv-a9rns2rl98-image.image?rcl=2025102112394237EB7B382B906F70F231&rk3s=8e244e95&rrcfp=f06b921b&x-expires=1763613671&x-signature=Y5A3BEFn7GEAbhyfS4S2nKijX8w%3D"
+                },
+                {
+                    id: 5,
+                    title: "北极永久冻土加速解冻，释放温室气体量超预期40%",
+                    source: "Liam O'Connor",
+                    time: "6小时前",
+                    image: "https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/4fd7ed2322b444afa179194ebb639048~tplv-a9rns2rl98-image.image?rcl=2025102112394237EB7B382B906F70F231&rk3s=8e244e95&rrcfp=f06b921b&x-expires=1763613693&x-signature=aCFaPhqz1IN6P8ezBBgRle2dzu0%3D"
+                },
+                {
+                    id: 6,
+                    title: "新的基因技术——精准识别和攻击癌细胞",
+                    source: "Claire Bennett",
+                    time: "2小时前",
+                    image: "https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/1af7abb80c444d279a6c7a0250b41d3d~tplv-a9rns2rl98-image.image?rcl=2025102112394237EB7B382B906F70F231&rk3s=8e244e95&rrcfp=f06b921b&x-expires=1763613687&x-signature=%2F9lZm0HgTbTIv%2Fq%2FAxbohL6QX8o%3D"
+                },
+                {
+                    id: 7,
+                    title: "芬兰试点\"融合课堂\"，学生创造力评估得分提升10%",
+                    source: "Elina Koskinen",
+                    time: "1天前",
+                    image: "https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/656435d2e0d440019ff6ef8ee329ab82~tplv-a9rns2rl98-image.image?rcl=2025102112394237EB7B382B906F70F231&rk3s=8e244e95&rrcfp=f06b921b&x-expires=1763613685&x-signature=9lHeaLhoE6USpAslx1RoPmnOevc%3D"
+                },
+                {
+                    id: 8,
+                    title: "新型环保材料——\"零碳混凝土\"",
+                    source: "Lukas Müller",
+                    time: "2天前",
+                    image: "https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/7914b671cb8c42318ebdf54ba3b42556~tplv-a9rns2rl98-image.image?rcl=2025102112394237EB7B382B906F70F231&rk3s=8e244e95&rrcfp=f06b921b&x-expires=1763613688&x-signature=aEjNGI2fQKPoUfo6x2JPhDS3zM8%3D"
+                }
+            ];
+            
+            let currentNewsIndex = 0;
+            let selectedNewsItems = [];
+            
+            // 显示通知
+            function showNotification(message) {
+                notification.textContent = message;
+                notification.style.display = 'block';
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                }, 3000);
+            }
+            
+            // 随机选择4篇新闻，并确保两真两假
+            function selectRandomNews() {
+                // 创建新闻副本，避免修改原始数据
+                const newsItemsCopy = allNewsItems.map(item => ({...item}));
+                
+                // 随机打乱数组
+                shuffleArray(newsItemsCopy);
+                
+                // 只取前4个
+                selectedNewsItems = newsItemsCopy.slice(0, 4);
+                
+                // 为每个新闻随机分配真假，确保两真两假
+                const indices = [0, 1, 2, 3];
+                shuffleArray(indices);
+                
+                // 前两个设为真，后两个设为假
+                for (let i = 0; i < 2; i++) {
+                    selectedNewsItems[indices[i]].isTrue = true;
+                }
+                
+                for (let i = 2; i < 4; i++) {
+                    selectedNewsItems[indices[i]].isTrue = false;
+                }
+                
+                console.log("本次体验的新闻真假分配:");
+                selectedNewsItems.forEach((news, index) => {
+                    console.log(`新闻${index+1}: ${news.title} - ${news.isTrue ? '真' : '假'}`);
+                });
+            }
+            
+            // 随机打乱数组
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+            
+            // 更新新闻判断页面内容
+            function updateNewsContent() {
+                const news = selectedNewsItems[currentNewsIndex];
+                
+                newsNumber.textContent = `新闻${currentNewsIndex + 1}`;
+                newsTitle.textContent = news.title;
+                newsSource.textContent = news.source;
+                newsTime.textContent = news.time;
+                
+                // 更新判断结果和图标
+                if (news.isTrue) {
+                    judgmentIcon.textContent = "✓";
+                    judgmentIcon.className = "judgment-icon judgment-true";
+                    judgmentResult.textContent = "DeepTruth判断它是真实的";
+                } else {
+                    judgmentIcon.textContent = "✗";
+                    judgmentIcon.className = "judgment-icon judgment-false";
+                    judgmentResult.textContent = "DeepTruth判断它是虚假的";
+                }
+                
+                // 更新新闻图片
+                newsImageContainer.innerHTML = '';
+                const img = document.createElement('img');
+                img.src = news.image;
+                img.alt = "新闻图片";
+                img.style.maxWidth = "100%";
+                img.style.maxHeight = "100%";
+                img.style.objectFit = "cover";
+                
+                // 添加图片加载失败的处理
+                img.onerror = function() {
+                    this.src = "https://p11-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/6b20950a4e5a4969ac12a592d4897c09.png~tplv-a9rns2rl98-24:720:720.png?rcl=20251021124446FFCAEE22AEFF0855EDA4&rk3s=8e244e95&rrcfp=8a172a1a&x-expires=1761626686&x-signature=y4z3UVeRarFytivI%2Fad4t5mxVms%3D"; // 如果图片加载失败，使用默认图片
+                    this.alt = "图片加载失败";
+                };
+                
+                newsImageContainer.appendChild(img);
+                
+                // 控制按钮显示
+                if (currentNewsIndex === 0) {
+                    prevButton.style.display = "none"; // 第一页隐藏"上一个"按钮
+                } else {
+                    prevButton.style.display = "inline-block"; // 非第一页显示"上一个"按钮
+                }
+                
+                if (currentNewsIndex === selectedNewsItems.length - 1) {
+                    nextButton.textContent = "完成体验";
+                } else {
+                    nextButton.textContent = "下一个";
+                }
+            }
+            
+            // 开始体验按钮点击事件
+            startButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                selectRandomNews();
+                currentNewsIndex = 0;
+                welcomePage.style.display = 'none';
+                judgePage.style.display = 'block';
+                // 显示"下一个"按钮（如果在上一次的体验中被隐藏了）
+                nextButton.style.display = 'inline-block';
+                // 显示"上一个"按钮（如果在上一次的体验中被隐藏了）
+                prevButton.style.display = 'inline-block';
+                updateNewsContent();
+            });
+            
+            // 上一个按钮点击事件
+            prevButton.addEventListener('click', function() {
+                if (currentNewsIndex > 0) {
+                    currentNewsIndex--;
+                    updateNewsContent();
+                }
+            });
+            
+            // 下一个按钮点击事件
+            nextButton.addEventListener('click', function() {
+                if (currentNewsIndex < selectedNewsItems.length - 1) {
+                    currentNewsIndex++;
+                    updateNewsContent();
+                } else {
+                    // 如果是最后一个新闻，显示通知
+                    showNotification("体验已完成！感谢您使用DeepTruth系统");
+                    // 隐藏"下一个"和"上一个"按钮
+                    nextButton.style.display = "none";
+                    prevButton.style.display = "none";
+                }
+            });
+        });
+    </script>
+
+
+</body></html>
